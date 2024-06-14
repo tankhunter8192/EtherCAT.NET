@@ -7,9 +7,9 @@ $path = "$($PSScriptRoot)/artifacts/bin32"
 New-Item -Force -ItemType directory -Path $path
 Set-Location -Path $path
 
-if ($IsWindows)
+if ($true)
 {
-	cmake ./../../native -DCMAKE_CONFIGURATION_TYPES:STRING="Debug;Release" -G "Visual Studio 16 2019" -A "Win32"
+	cmake ./../../native -DCMAKE_CONFIGURATION_TYPES:STRING="Debug;Release" -G "Visual Studio 17 2022" -A "Win32"
 }
 elseif ($IsLinux)
 {
@@ -18,11 +18,11 @@ elseif ($IsLinux)
 elseif ($IsMacOS)
 {
     # The i386 architecture is deprecated for macOS
-    throw [System.PlatformNotSupportedException]
+    #throw [System.PlatformNotSupportedException]
 }
 else 
 {
-    throw [System.PlatformNotSupportedException]
+    #throw [System.PlatformNotSupportedException]
 }
 
 # x64
@@ -31,9 +31,9 @@ $path = "$($PSScriptRoot)/artifacts/bin64"
 New-Item -Force -ItemType directory -Path $path
 Set-Location -Path $path
 
-if ($IsWindows)
+if ($true)
 {
-	cmake ./../../native -DCMAKE_CONFIGURATION_TYPES:STRING="Debug;Release" -G "Visual Studio 16 2019" -A "x64"
+	cmake ./../../native -DCMAKE_CONFIGURATION_TYPES:STRING="Debug;Release" -G "Visual Studio 17 2022" -A "x64"
 }
 elseif ($IsLinux -or $IsMacOS)
 {

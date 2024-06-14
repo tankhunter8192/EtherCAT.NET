@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Text;
 using System.Threading;
@@ -11,16 +12,58 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using EtherCAT.NET.Infrastructure;
 using EtherCAT.NET.Extension;
+using System.Runtime.CompilerServices;
 
 namespace SampleMaster
 {
     class Program
     {
         static async Task Main(string[] args)
-        {          
+        {
+            /*
+             * TODO: List all interface names and a selection
+             */
+            NetworkInterface[] interfaces = NetworkInterface.GetAllNetworkInterfaces();
+            int count = 0;
+            foreach (NetworkInterface nic in interfaces)
+            {
+                Console.WriteLine($"{count} Interface Name: {nic.Name} , " +
+                    $"Speed: {nic.Speed} , " +
+                    $"ID: {nic.Id} , Description: {nic.Description}");
+                count++;
+            }
             /* Set interface name. Edit this to suit your needs. */
             var interfaceName = "eth0";
-
+            /*
+             * Selection area
+             * 
+             */
+            bool cicle = true;
+            while (cicle) {
+                Console.WriteLine("Please select via the number in the front of the desired network adapter or quit with \"q\":");
+                string input = Console.ReadLine();
+                if (input[0] == 'q')
+                {
+                    return;
+                }
+                if(int.TryParse(input, out int sel))
+                {
+                    Console.WriteLine($"Selected: {sel}, {interfaces[sel].Name}, {interfaces[sel].Description}, {interfaces[sel].Id}, {interfaces[sel].Speed}");
+                    Console.WriteLine($"Is this the right interface? [y/n/q]");
+                    string confirm = Console.ReadLine();
+                    if(confirm == "q")
+                    {
+                        return ;
+                    }else if(confirm == "n")
+                    {
+                        continue;
+                    }else if(confirm == "y")
+                    {
+                        interfaceName = interfaces[sel].Name;
+                        Console.WriteLine($"Writing Selected: {interfaceName}");
+                    }
+                }
+            }
             /* Set ESI location. Make sure it contains ESI files! The default path is /home/{user}/.local/share/ESI */
             var localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             var esiDirectoryPath = Path.Combine(localAppDataPath, "ESI");
