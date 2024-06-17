@@ -44,5 +44,24 @@ else
     throw [System.PlatformNotSupportedException]
 }
 
+#arm64 ; not tested yet
+Write-Host "Creating native arm64 project"
+$path = "$($PSScriptRoot)/artifacts/binA64"
+New-Item -Force -ItemType directory -Path $path
+
+Set-Location -Path $path
+
+if($IsWindows)
+{
+    cmake ./../../native -DCMAKE_CONFIGURATION_TYPES:STRING="Debug;Release" -G "Visual Studio 17 2022" -A "arm64"
+}
+elseif ($IsLinux -or $IsMacOS)
+{
+    cmake ./../../native -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS="-march=aarch64" -DCMAKE_CXX_FLAGS="-march=aarch64" 
+}
+else
+{
+    throw [System.PlatformNotSupportedException]
+}
 # return
 Set-Location -Path $PSScriptRoot

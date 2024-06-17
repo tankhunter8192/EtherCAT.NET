@@ -61,11 +61,13 @@ namespace SampleMaster
                     {
                         interfaceName = interfaces[sel].Name;
                         Console.WriteLine($"Writing Selected: {interfaceName}");
+                        cicle = false;
                     }
                 }
             }
             /* Set ESI location. Make sure it contains ESI files! The default path is /home/{user}/.local/share/ESI */
             var localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            Console.WriteLine($"PATH: {localAppDataPath}");
             var esiDirectoryPath = Path.Combine(localAppDataPath, "ESI");
             Directory.CreateDirectory(esiDirectoryPath);
 
@@ -88,7 +90,7 @@ namespace SampleMaster
             var logger = loggerFactory.CreateLogger("EtherCAT Master");
 
             /* create EtherCAT master settings (with 10 Hz cycle frequency) */
-            var settings = new EcSettings(cycleFrequency: 10U, esiDirectoryPath, interfaceName);
+            var settings = new EcSettings(cycleFrequency: 1U, esiDirectoryPath, interfaceName);
 
             /* scan available slaves */
             var rootSlave = EcUtilities.ScanDevices(settings.InterfaceName);
@@ -138,6 +140,7 @@ namespace SampleMaster
             var variables = slaves.SelectMany(child => child.GetVariables()).ToList();
 
             /* create EC Master (short sample) */
+            /*
             using (var master = new EcMaster(settings, logger))
             {
                 try
@@ -150,7 +153,7 @@ namespace SampleMaster
                     throw;
                 }
 
-                /* start master */
+                /* start master *//*
                 var random = new Random();
                 var cts = new CancellationTokenSource();
 
@@ -175,14 +178,14 @@ namespace SampleMaster
                     }
                 }, cts.Token);
 
-                /* wait for stop signal */
+                /* wait for stop signal *//*
                 Console.ReadKey(true);
 
                 cts.Cancel();
                 await task;
             }
-
-            return; /* remove this to run real world sample*/
+            */
+            //return; /* remove this to run real world sample*/
 
             /* create EC Master (real world sample) */
             using (var master = new EcMaster(settings, logger))
@@ -198,15 +201,15 @@ namespace SampleMaster
                 }
 
                 /*################ Sample code START ##################
-                 
-                // Beckhoff EL2004 (4 channel digital output)
-                var eL2004 = new DigitalOut(slaves[1]);
+                */ 
+                // Beckhoff EL2008 (8 channel digital output)
+                var eL2008 = new DigitalOut(slaves[1]);
 
-                eL2004.SetChannel(1, false);
-                eL2004.SetChannel(2, true);
-                eL2004.SetChannel(3, false);
-                eL2004.SetChannel(4, true);
-
+                eL2008.SetChannel(1, false);
+                eL2008.SetChannel(2, true);
+                eL2008.SetChannel(3, false);
+                eL2008.SetChannel(4, true);
+                /*
                 // Beckhoff EL1014 (4 channel digital input)
                 var eL1014 = new DigitalIn(slaves[2]);
 
@@ -227,7 +230,7 @@ namespace SampleMaster
                 /* start master */
                 var random = new Random();
                 var cts = new CancellationTokenSource();
-
+                int counter = 0;
                 var task = Task.Run(() =>
                 {
                     var sleepTime = 1000 / (int)settings.CycleFrequency;
@@ -237,11 +240,28 @@ namespace SampleMaster
                         master.UpdateIO(DateTime.UtcNow);
 
                         /*################ Sample code START ##################
-
+                        */
                         // Beckhoff EL2004 toggle digital output for ch1 and ch3
-                        eL2004.ToggleChannel(2);
-                        eL2004.ToggleChannel(4);
-
+                        
+                        eL2008.SetChannel(1, ((counter & (1 << 7)) != 0));
+                        eL2008.SetChannel(2, ((counter & (1 << 6)) != 0));
+                        eL2008.SetChannel(3, ((counter & (1 << 5)) != 0));
+                        eL2008.SetChannel(4, ((counter & (1 << 4)) != 0));
+                        eL2008.SetChannel(5, ((counter & (1 << 3)) != 0));
+                        eL2008.SetChannel(6, ((counter & (1 << 2)) != 0));
+                        eL2008.SetChannel(7, ((counter & (1 << 1)) != 0));
+                        eL2008.SetChannel(8, ((counter & (1 << 0)) != 0));
+                        counter++;
+                        /*
+                        for (int i = 1; i <= 8; i++)
+                        {
+                            eL2008.SetChannel((int)i, (counter & 1) != 0);
+                        }
+                        counter++;
+                        */
+                        //eL2008.ToggleChannel(2);
+                        //eL2008.ToggleChannel(4);
+                        /*
                         // Beckhoff EL1014 read digital input state 
                         logger.LogInformation($"EL1014 channel 1 input: {eL1014.GetChannel(1)}");
                         logger.LogInformation($"EL1014 channel 2 input: {eL1014.GetChannel(2)}");
@@ -253,7 +273,11 @@ namespace SampleMaster
                         logger.LogInformation($"EL1014 channel 2 output: {eL2004.GetChannel(2)}");
                         logger.LogInformation($"EL1014 channel 3 output: {eL2004.GetChannel(3)}");
                         logger.LogInformation($"EL1014 channel 4 output: {eL2004.GetChannel(4)}");
-                   
+                        
+                        logger.LogInformation($"EL2008: 1 {eL2008.GetChannel(1)}, 2 {eL2008.GetChannel(2)}, 3 {eL2008.GetChannel(3)}, 4 {eL2008.GetChannel(4)}");
+                        logger.LogInformation($"EL2008: 5 {eL2008.GetChannel(5)}, 6 {eL2008.GetChannel(6)}, 7 {eL2008.GetChannel(7)}, 8 {eL2008.GetChannel(8)}");
+                        Console.WriteLine($"Logger {counter}");
+                        
                         // Beckhoff EL3021 SDO read (index: 0x6000 sub index: 0x2)
                         // overrange of 12 bit analog input.
                         var slaveIndex = (ushort)(Convert.ToUInt16(slaves.ToList().IndexOf(slaves[3])) + 1);
