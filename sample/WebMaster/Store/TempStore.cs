@@ -25,5 +25,9 @@ namespace WebMaster.Store
          */
         public static List<SlaveInfo> RootSlaves { get; set; } = new();
         public static List<List<SlaveInfo>> SlaveLists { get; set; } = new();
+        /*
+         * 
+         */
+        public static string ESIpath { get; set; } = "";
     }
 }

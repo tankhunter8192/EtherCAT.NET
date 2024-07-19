@@ -69,7 +69,9 @@ namespace SampleMaster
             var localAppDataPath = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
             Console.WriteLine($"PATH: {localAppDataPath}");
             var esiDirectoryPath = Path.Combine(localAppDataPath, "ESI");
+            Console.WriteLine($"ESI-Path: {esiDirectoryPath}");
             Directory.CreateDirectory(esiDirectoryPath);
+            Console.WriteLine($"File Count: {Directory.EnumerateFiles(esiDirectoryPath).ToList().Count}");
 
             /* Copy native file. NOT required in end user scenarios, where EtherCAT.NET package is installed via NuGet! */
             var codeBase = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
