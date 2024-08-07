@@ -149,7 +149,7 @@ namespace EtherCAT.NET
             // find ESI
             if (slave.Csa != 0)
                 (slave.Esi, slave.EsiGroup) = EsiUtilities.FindEsi(esiDirectoryPath, slave.Manufacturer, slave.ProductCode, slave.Revision);
-
+            Console.WriteLine($"Slave CSA: {slave.Csa}");
             //
             var pdos = new List<SlavePdo>();
             var base64ImageData = new byte[] { };
@@ -195,8 +195,16 @@ namespace EtherCAT.NET
                         var slaveVariables = pdoType.Entry.Select(x =>
                         {
                             var variableIndex = (ushort)EsiUtilities.ParseHexDecString(x.Index.Value);
-                            var subIndex = x.SubIndex != null ? (byte)EsiUtilities.ParseHexDecString(x.SubIndex) : (byte)255;
-                            Console.WriteLine($"EcUtilities.198 edited. Value: {subIndex}");
+                            byte subIndex;
+                            if(variableIndex == 0)
+                            {
+                                subIndex = (byte)0;
+                            }
+                            else
+                            {
+                                subIndex = x.SubIndex != null ? (byte)EsiUtilities.ParseHexDecString(x.SubIndex) : (byte)255;
+                            }
+                            Console.WriteLine($"EcUtilities.198 edited. Value:{variableIndex}, {subIndex}");
                             //// Improve. What about -1 if SubIndex does not exist?
                             return new SlaveVariable(slavePdo, x.Name?.FirstOrDefault()?.Value, variableIndex, subIndex, dataDirection, EcUtilities.ParseEtherCatDataType(x.DataType?.Value), (byte)x.BitLen);
                         }).ToList();
