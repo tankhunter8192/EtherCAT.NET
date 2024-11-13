@@ -133,7 +133,7 @@ namespace SampleMaster
 
             foreach (var slave in slaves)
             {
-                message.AppendLine($"{slave.DynamicData.Name} (PDOs: {slave.DynamicData.Pdos.Count} - CSA: {slave.Csa})");
+                message.AppendLine($"{slave.DynamicData.Name} (PDOs: {slave.DynamicData.Pdos.Count} - CSA: {slave.Csa} - Description: {slave.DynamicData.Description})");
             }
 
             logger.LogInformation(message.ToString().TrimEnd());

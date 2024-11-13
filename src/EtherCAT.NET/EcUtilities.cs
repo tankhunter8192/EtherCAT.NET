@@ -204,7 +204,7 @@ namespace EtherCAT.NET
                             {
                                 subIndex = x.SubIndex != null ? (byte)EsiUtilities.ParseHexDecString(x.SubIndex) : (byte)255;
                             }
-                            Console.WriteLine($"EcUtilities.198 edited. Value:{variableIndex}, {subIndex}");
+                            Console.WriteLine($"EcUtilities.198 edited. Value:{variableIndex.ToString("X")}, {subIndex.ToString("X")}");
                             //// Improve. What about -1 if SubIndex does not exist?
                             return new SlaveVariable(slavePdo, x.Name?.FirstOrDefault()?.Value, variableIndex, subIndex, dataDirection, EcUtilities.ParseEtherCatDataType(x.DataType?.Value), (byte)x.BitLen);
                         }).ToList();
